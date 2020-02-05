@@ -1,0 +1,4 @@
+{
+    "eslint.autoFixOnSave": true,
+    "debug.node.autoAttach": "off"
+}
