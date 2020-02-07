@@ -7,7 +7,7 @@ class LoginPage extends React.Component {
   }
 
   render() {
-    const {error, email, password, onChangeEmail, onChangePassword} = this.props;
+    const {error, email, password, login, setPassowrd, setEmail} = this.props;
 
     return (
       <Container style={styles.container}>
@@ -18,17 +18,17 @@ class LoginPage extends React.Component {
             label="Email"
             error={error}
             value={email}
-            onChange={event => onChangeEmail(event.target.value)}
+            onChange={event => setEmail(event.target.value)}
           />
           <TextField
             label="Password"
             type="password"
             error={error}
             value={password}
-            onChange={event => onChangePassword(event.target.value)}
+            onChange={event => setPassowrd(event.target.value)}
           />
         </FormGroup>
-        <Button style={styles.buttonStyle} variant="contained" color="primary" onClick={this.login}>
+        <Button style={styles.buttonStyle} variant="contained" color="primary" onClick={login}>
           Login
         </Button>
       </Container>
