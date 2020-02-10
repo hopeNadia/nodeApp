@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import SingUpPage from './signUpComponent';
 
 export const signUpReuqest = async params => {
@@ -24,62 +24,26 @@ export const signUpReuqest = async params => {
   };
 };
 
-class SignUpContainer extends React.Component {
-  constructor(props) {
-    super(props);
+const SignUpContainer = () => {
+  const [email, setEmail] = useState(null);
+  const [password, setPassowrd] = useState(null);
+  const [error, setError] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [passConfirm, setPassConfirm] = useState(null);
 
-    this.state = {
-      email: null,
-      password: null,
-      error: null,
-      userName: null,
-      passConfirm: null
-    };
-  }
-  componentDidMount() {
-    console.log('Did mount');
-  }
-
-  onChangeEmail = value => {
-    this.setState({
-      email: value
-    });
+  const signupProps = {
+    error,
+    email,
+    password,
+    passConfirm,
+    userName,
+    onChangePassword: setPassowrd,
+    onChangeEmail: setEmail,
+    onChangeUserName: setUserName,
+    onChangeConfirm: setPassConfirm
   };
 
-  onChangeUserName = value => {
-    this.setState({
-      userName: value
-    });
-  };
-
-  onChangeConfirm = value => {
-    this.setState({
-      passConfirm: value
-    });
-  };
-
-  onChangePassword = value => {
-    this.setState({
-      password: value
-    });
-  };
-
-  render() {
-    const {error, email, password, passConfirm, userName} = this.state;
-    const loginProps = {
-      error,
-      email,
-      password,
-      passConfirm,
-      userName,
-      onChangePassword: this.onChangePassword,
-      onChangeEmail: this.onChangeEmail,
-      onChangeUserName: this.onChangeUserName,
-      onChangeConfirm: this.onChangeConfirm
-    };
-
-    return <SingUpPage {...loginProps} />;
-  }
-}
+  return <SingUpPage {...signupProps} />;
+};
 
 export default SignUpContainer;

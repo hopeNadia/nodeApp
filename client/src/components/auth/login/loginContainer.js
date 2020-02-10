@@ -1,6 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import LoginPage from './loginComponent';
-import {useHistory} from 'react-router-dom';
 
 export const loginRequest = async params => {
   let response = await fetch('http://localhost:5000/users/login', {
@@ -29,22 +28,10 @@ const LoginContainer = () => {
   const [email, setEmail] = useState(null);
   const [password, setPassowrd] = useState(null);
   const [error, setError] = useState(null);
-  let history = useHistory();
-
-  useEffect(() => {
-    document.title = `You clicked ${email} times`;
-  });
 
   const login = () => {
-    // const {email, password} = this.state;
-    // const requestResult = await loginRequest({email, password});
-
-    // console.log('loginResult', requestResult);
-    // this.setState({error: !requestResult.loginSuccess});
-
     console.log('LOGIN');
     setPassowrd('');
-    history.push('/about');
   };
 
   const loginProps = {

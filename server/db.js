@@ -1,53 +1,64 @@
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
+
 const dbConnectionUri =
   'mongodb+srv://atlasHomeAdmin:UHBkEyIeuswbHMY9@cluster1-ibgto.mongodb.net/test?retryWrites=true&w=majority';
 
-const client = new MongoClient(dbConnectionUri, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(dbConnectionUri, {useNewUrlParser: true, useUnifiedTopology: true});
 
-class SingletonClass {
-  constructor() {
-    if (SingletonClass.instance) {
-      return SingletonClass.instance;
-    }
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'DB connection error'));
 
-    SingletonClass.instance = this;
+mongoose.Promise = global.Promise;
 
-    return this;
-  }
-}
+module.exports = {
+  User: require('./user/userModel')
+};
 
-class DBMongo extends SingletonClass {
-  constructor() {
-    super();
+// Mongo connection without mongoose: singletone class
+// const client = new MongoClient(dbConnectionUri, {useNewUrlParser: true, useUnifiedTopology: true});
 
-    this._collection = null;
-  }
+// class SingletonClass {
+//   constructor() {
+//     if (SingletonClass.instance) {
+//       return SingletonClass.instance;
+//     }
 
-  get collection() {
-    return this._collection;
-  }
+//     SingletonClass.instance = this;
 
-  set collection(v) {
-    this._collection = v;
-  }
+//     return this;
+//   }
+// }
 
-  initializeCollection(dbName, collectionName) {
-    client.connect((err, dbInst) => {
-      if (err) {
-        console.log('DB error', err);
-      } else {
-        this.collection = dbInst.db(dbName).collection(collectionName);
+// class DBMongo extends SingletonClass {
+//   constructor() {
+//     super();
 
-        console.log('Mongo DB conection success');
-        // perform actions on the collection object
-        // client.close();
-      }
-    });
-  }
+//     this._collection = null;
+//   }
 
-  closeClient() {
-    client.close();
-  }
-}
+//   get collection() {
+//     return this._collection;
+//   }
 
-module.exports = DBMongo;
+//   set collection(v) {
+//     this._collection = v;
+//   }
+
+//   initializeCollection(dbName, collectionName) {
+//     client.connect((err, dbInst) => {
+//       if (err) {
+//         console.log('DB error', err);
+//       } else {
+//         this.collection = dbInst.db(dbName).collection(collectionName);
+
+//         console.log('Mongo DB conection success');
+//         // perform actions on the collection object
+//         // client.close();
+//       }
+//     });
+//   }
+
+//   closeClient() {
+//     client.close();
+//   }
+// }
