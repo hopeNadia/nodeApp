@@ -1,5 +1,6 @@
-const db = require('../db');
+const db = require('../helpers/db');
 const bcrypt = require('bcryptjs');
+
 const User = db.User;
 
 async function getAll() {

@@ -12,7 +12,7 @@ class LoginPage extends React.Component {
     return (
       <Container style={styles.container}>
         <FormGroup>
-          {error && <TextField disabled value={'Email or password incorrect'} type="text" variant="outlined" />}
+          {error && <TextField error label="Error" value={error} variant="outlined" multiline="true" />}
           <TextField
             type="email"
             label="Email"

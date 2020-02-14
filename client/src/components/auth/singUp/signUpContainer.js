@@ -1,27 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import SingUpPage from './signUpComponent';
 
-export const signUpReuqest = async params => {
-  let response = await fetch('http://localhost:5000/users/login', {
+const signupRequest = async params => {
+  return fetch('http://localhost:5000/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
     },
     body: JSON.stringify(params)
-  });
-
-  const responseData = await response.json();
-
-  console.log('response', response, responseData);
-
-  if (response.ok && responseData.loginSuccess)
-    return {
-      ...responseData
-    };
-
-  return {
-    loginSuccess: false
-  };
+  }).then(response => response.json());
 };
 
 const SignUpContainer = () => {
@@ -30,6 +17,14 @@ const SignUpContainer = () => {
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState(null);
   const [passConfirm, setPassConfirm] = useState(null);
+
+  const signup = async () => {
+    const result = await signupRequest({email, password, userName});
+
+    if (result.error) {
+      setError(result.error);
+    }
+  };
 
   const signupProps = {
     error,
@@ -40,7 +35,8 @@ const SignUpContainer = () => {
     onChangePassword: setPassowrd,
     onChangeEmail: setEmail,
     onChangeUserName: setUserName,
-    onChangeConfirm: setPassConfirm
+    onChangeConfirm: setPassConfirm,
+    signup
   };
 
   return <SingUpPage {...signupProps} />;

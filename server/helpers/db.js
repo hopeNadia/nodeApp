@@ -11,7 +11,7 @@ db.on('error', console.error.bind(console, 'DB connection error'));
 mongoose.Promise = global.Promise;
 
 module.exports = {
-  User: require('./user/userModel')
+  User: require('../user/userModel')
 };
 
 // Mongo connection without mongoose: singletone class

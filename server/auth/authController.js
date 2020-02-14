@@ -1,6 +1,11 @@
-const db = require('../db');
+const db = require('../helpers/db');
 const bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
 const User = db.User;
+const config = {
+  secret: 'MY_SECRET_KEY'
+};
 
 function validateEmail(email) {
   const reg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -24,22 +29,24 @@ async function signup(userParam) {
   }
 
   if (await User.findOne({email: email})) {
-    throw 'Email ' + email + 'is already in use';
+    throw 'Email ' + email + ' is already in use';
   }
 
   if (await User.findOne({userName: userName})) {
-    throw 'UserName ' + userName + 'is already in use';
+    throw 'UserName ' + userName + ' is already in use';
   }
 
   const user = new User(userParam);
 
-  if (password) {
-    user.hash = bcrypt.hashSync(password, 10);
-  }
+  user.hash = bcrypt.hashSync(password, 10);
 
   await user.save();
 
-  return user;
+  var token = jwt.sign({id: user._id}, config.secret, {
+    expiresIn: 864000
+  });
+
+  return {user, token};
 }
 
 async function login(userParam) {
@@ -50,13 +57,17 @@ async function login(userParam) {
   }
 
   const user = (await User.findOne({email})) || (await User.findOne({userName}));
-  const rightPassword = user && (await bcrypt.compare(password, user && user.hash));
+  const rightPassword = user && (await bcrypt.compare(password, user.hash));
 
   if (!user || !rightPassword) {
     throw 'Not right user creadentials';
   }
 
-  return user;
+  var token = jwt.sign({id: user._id}, config.secret, {
+    expiresIn: 864000 // expires in 24 hours
+  });
+
+  return {user, token};
 }
 
 module.exports = {

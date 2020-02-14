@@ -2,7 +2,7 @@ const express = require('express');
 const routes = express.Router();
 const controllers = require('./userControllers');
 
-routes.get('/users', getUsers);
+routes.get('/users', verifyToken, getUsers);
 routes.get('/user/:id', getUserById);
 routes.get('/deleteuser/:id', _delete);
 routes.post('/updateuser/:id', update);
@@ -19,7 +19,7 @@ function getUsers(request, response, next) {
 
 function getUserById(request, response, next) {
   controllers
-    .getById(request.params)
+    .getById(request)
     .then(user => (user ? response.json(user) : response.sendStatus(404)))
     .catch(err => next(err));
 }
