@@ -2,8 +2,8 @@ const express = require('express');
 const routes = express.Router();
 const controllers = require('./userControllers');
 
-routes.get('/users', verifyToken, getUsers);
-routes.get('/user/:id', getUserById);
+routes.get('/getAllUsers', getUsers);
+routes.get('/:id', getUserById);
 routes.get('/deleteuser/:id', _delete);
 routes.post('/updateuser/:id', update);
 routes.post('/adduser', create);

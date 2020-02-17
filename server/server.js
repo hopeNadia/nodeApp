@@ -6,6 +6,7 @@ const errorHandler = require('./helpers/errorHandler');
 const router = express.Router();
 const userRoutes = require('./user/userRoutes');
 const authRoutes = require('./auth/authRoutes');
+const verifyToken = require('./helpers/jwtVerification').verifyToken;
 
 var cors = require('cors');
 app.use(cors());
@@ -16,7 +17,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(router);
-app.use(userRoutes);
+app.use('/users', verifyToken, userRoutes);
+// app.use(userRoutes);
 app.use(authRoutes);
 
 app.use(errorHandler);

@@ -5,9 +5,9 @@ const config = {
 };
 
 function verifyToken(request, response, next) {
-  var token = request.headers['x-access-token'] || request.headers.authorization.replace('Bearer ', '');
-
-  console.log(token);
+  try {
+    var token = request.headers['x-access-token'] || request.headers.authorization.replace('Bearer ', '');
+  } catch (e) {}
 
   if (!token) throw 'No auth token provided';
 
@@ -16,7 +16,7 @@ function verifyToken(request, response, next) {
     if (err) throw 'Token not right';
   });
 
-  return next();
+  next();
 }
 
 module.exports = {
