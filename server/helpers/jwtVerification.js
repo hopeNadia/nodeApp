@@ -5,15 +5,12 @@ const config = {
 };
 
 function verifyToken(request, response, next) {
-  try {
-    var token = request.headers['x-access-token'] || request.headers.authorization.replace('Bearer ', '');
-  } catch (e) {}
+  var token = request.headers.authorization;
 
   if (!token) throw 'No auth token provided';
 
-  jwt.verify(token, config.secret, (err, decoded) => {
-    console.log(err, decoded);
-    if (err) throw 'Token not right';
+  jwt.verify(token.replace('Bearer ', ''), config.secret, (err, decoded) => {
+    if (err) throw 'Not valid authorize token';
   });
 
   next();

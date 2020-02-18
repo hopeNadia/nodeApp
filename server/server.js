@@ -4,9 +4,11 @@ const bodyParser = require('body-parser');
 const errorHandler = require('./helpers/errorHandler');
 
 const router = express.Router();
+
+const verifyToken = require('./helpers/jwtVerification').verifyToken;
 const userRoutes = require('./user/userRoutes');
 const authRoutes = require('./auth/authRoutes');
-const verifyToken = require('./helpers/jwtVerification').verifyToken;
+const imageRoutes = require('./image/imageRoutes');
 
 var cors = require('cors');
 app.use(cors());
@@ -17,9 +19,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(router);
-app.use('/users', verifyToken, userRoutes);
-// app.use(userRoutes);
 app.use(authRoutes);
+// app.use('/users', verifyToken, userRoutes);
+app.use('/users', userRoutes);
+app.use('/image', imageRoutes);
 
 app.use(errorHandler);
 
