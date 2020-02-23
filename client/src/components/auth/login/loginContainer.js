@@ -11,7 +11,7 @@ export const loginRequest = async params => {
   }).then(response => response.json());
 };
 
-const LoginContainer = () => {
+const LoginContainer = props => {
   const [email, setEmail] = useState(null);
   const [password, setPassowrd] = useState(null);
   const [error, setError] = useState('');
@@ -22,6 +22,8 @@ const LoginContainer = () => {
     if (result.error) {
       setError(result.error);
     }
+
+    console.log(props);
   };
 
   const loginProps = {

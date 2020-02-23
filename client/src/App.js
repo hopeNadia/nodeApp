@@ -1,14 +1,14 @@
 import React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import Auth from './components/auth';
-import SignUpCont from './components/auth/singUp/signUpContainer';
+import HomeContainer from './components/home/homeContainer';
 
 function App() {
   return (
     <main>
       <Switch>
-        <Route path="/" component={Auth} />
-        <Route path="/about" component={SignUpCont} />
+        <Route path="/" component={HomeContainer} />
+        <Route path="/home" component={Auth} />
         <Route component={Error} />
       </Switch>
     </main>
