@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const multer = require('multer');
+const crypto = require('crypto');
 
 const dbConnectionUri =
   'mongodb+srv://atlasHomeAdmin:UHBkEyIeuswbHMY9@cluster1-ibgto.mongodb.net/test?retryWrites=true&w=majority';
@@ -10,8 +12,43 @@ db.on('error', console.error.bind(console, 'DB connection error'));
 
 mongoose.Promise = global.Promise;
 
+const GridFsStorage = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
+
+let localGridFsStorage;
+
+db.once('open', () => {
+  localGridFsStorage = Grid(db.db, mongoose.mongo);
+  localGridFsStorage.collection('uploads');
+  console.log('Connection Successful');
+});
+
+// Create storage engine
+const storage = new GridFsStorage({
+  url: dbConnectionUri,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = file.originalname;
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'uploads'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+
+const multerUpload = multer({storage});
+
 module.exports = {
-  User: require('../user/userModel')
+  User: require('../user/userModel'),
+  multerUpload,
+  localGridFsStorage
 };
 
 // Mongo connection without mongoose: singletone class

@@ -1,13 +1,18 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const schema = new Schema({
-  userId: {type: String, required: true},
-  fileUrl: {type: String},
-  fileSource: {type: String},
-  creationDate: {type: Date, required: true},
-  updateDate: {type: Date}
-});
+const schema = new Schema(
+  {
+    // userId: {type: String, required: true},
+    imageName: {type: String},
+    imageSource: {type: String},
+    contentType: {type: String}
+  },
+  {
+    collection: 'images',
+    timestamps: true
+  }
+);
 
 schema.set('toJSON', {virtuals: true});
 
