@@ -1,8 +1,6 @@
-const db = require('../helpers/db');
 const bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-
-const User = db.User;
+const User = require('../user/userModel');
 const config = {
   secret: 'MY_SECRET_KEY'
 };

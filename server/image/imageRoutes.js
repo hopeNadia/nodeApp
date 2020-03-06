@@ -1,9 +1,11 @@
 const express = require('express');
 const routes = express.Router();
 const controllers = require('./imageControllers');
-const {multerUpload} = require('../helpers/db');
+const mongoDB = require('../helpers/db');
 
-routes.post('/upload', multerUpload.single('imageData'), uploadImage);
+// routes.post('/upload', mongoDB.multerUpload.single('imageData'), uploadImage);
+routes.post('/upload', uploadImage);
+
 routes.get('/get', getImage);
 
 function uploadImage(request, response, next) {

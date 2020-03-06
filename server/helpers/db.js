@@ -1,101 +1,89 @@
 const mongoose = require('mongoose');
 const multer = require('multer');
 const crypto = require('crypto');
-
-const dbConnectionUri =
-  'mongodb+srv://atlasHomeAdmin:UHBkEyIeuswbHMY9@cluster1-ibgto.mongodb.net/test?retryWrites=true&w=majority';
-
-mongoose.connect(dbConnectionUri, {useNewUrlParser: true, useUnifiedTopology: true});
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'DB connection error'));
-
-mongoose.Promise = global.Promise;
-
 const GridFsStorage = require('multer-gridfs-storage');
-const Grid = require('gridfs-stream');
 
-let localGridFsStorage;
+class SingletonClass {
+  constructor() {
+    if (SingletonClass.instance) {
+      return SingletonClass.instance;
+    }
 
-db.once('open', () => {
-  localGridFsStorage = Grid(db.db, mongoose.mongo);
-  localGridFsStorage.collection('uploads');
-  console.log('Connection Successful');
-});
+    SingletonClass.instance = this;
 
-// Create storage engine
-const storage = new GridFsStorage({
-  url: dbConnectionUri,
-  file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      crypto.randomBytes(16, (err, buf) => {
-        if (err) {
-          return reject(err);
-        }
-        const filename = file.originalname;
-        const fileInfo = {
-          filename: filename,
-          bucketName: 'uploads'
-        };
-        resolve(fileInfo);
-      });
-    });
+    return this;
   }
-});
+}
 
-const multerUpload = multer({storage});
+class MongoDBClass extends SingletonClass {
+  constructor() {
+    super();
+
+    this._dbConnectionUri =
+      'mongodb+srv://atlasHomeAdmin:UHBkEyIeuswbHMY9@cluster1-ibgto.mongodb.net/test?retryWrites=true&w=majority';
+    this._localGridFsStorage = null;
+    this._connection = null;
+    this._multerUpload = null;
+  }
+  get localGridFsStorage() {
+    return this._localGridFsStorage;
+  }
+
+  get multerUpload() {
+    return this._multerUpload;
+  }
+
+  init = callback => {
+    mongoose.connect(this._dbConnectionUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      promiseLibrary: global.Promise
+    });
+    mongoose.Promise = global.Promise;
+    this._connection = mongoose.connection;
+
+    this._connection.on('error', console.error.bind(console, 'DB connection error'));
+
+    console.log('#Success DB');
+
+    this._connection.once('open', () => {
+      this._localGridFsStorage = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads'
+      });
+      console.log('#Success init storage');
+    });
+
+    const storage = new GridFsStorage({
+      url: this._dbConnectionUri,
+      file: (req, file) => {
+        return new Promise((resolve, reject) => {
+          crypto.randomBytes(16, (err, buf) => {
+            if (err) {
+              return reject(err);
+            }
+            const filename = file.originalname;
+            const fileInfo = {
+              filename: filename,
+              bucketName: 'uploads'
+            };
+            resolve(fileInfo);
+          });
+        });
+      }
+    });
+
+    this._multerUpload = multer({storage});
+
+    callback();
+  };
+}
+
+const mongoDB = new MongoDBClass();
+
+mongoDB.init(() => {
+  console.log('#Init');
+});
 
 module.exports = {
-  User: require('../user/userModel'),
-  multerUpload,
-  localGridFsStorage
+  mongoDB
 };
-
-// Mongo connection without mongoose: singletone class
-// const client = new MongoClient(dbConnectionUri, {useNewUrlParser: true, useUnifiedTopology: true});
-
-// class SingletonClass {
-//   constructor() {
-//     if (SingletonClass.instance) {
-//       return SingletonClass.instance;
-//     }
-
-//     SingletonClass.instance = this;
-
-//     return this;
-//   }
-// }
-
-// class DBMongo extends SingletonClass {
-//   constructor() {
-//     super();
-
-//     this._collection = null;
-//   }
-
-//   get collection() {
-//     return this._collection;
-//   }
-
-//   set collection(v) {
-//     this._collection = v;
-//   }
-
-//   initializeCollection(dbName, collectionName) {
-//     client.connect((err, dbInst) => {
-//       if (err) {
-//         console.log('DB error', err);
-//       } else {
-//         this.collection = dbInst.db(dbName).collection(collectionName);
-
-//         console.log('Mongo DB conection success');
-//         // perform actions on the collection object
-//         // client.close();
-//       }
-//     });
-//   }
-
-//   closeClient() {
-//     client.close();
-//   }
-// }
